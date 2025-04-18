@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hacker Birthday Terminal</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            cursor: text;
+        }
+
+        #terminal {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        #output {
+            min-height: 300px;
+            white-space: pre-wrap;
+        }
+
+        #inputLine {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        #prompt {
+            margin-right: 5px;
+        }
+
+        input {
+            background: none;
+            border: none;
+            color: #0f0;
+            font: inherit;
+            width: 100%;
+            outline: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 999;
+        }
+
+        .modal video {
+            /* max-width: 80%; */
+            width: 40%;
+            height: 80%;
+            object-fit: contain;
+            border: 2px solid #0f0;
+        }
+
+        .close {
+            margin-top: 10px;
+            color: #0f0;
+            cursor: pointer;
+        }
+
+        .ascii-art {
+            color: rgb(25, 0, 255);
+            font-size: 14px;
+            white-space: pre;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body onclick="input.focus(); playBirthdaySongOnce();">
+    <audio id="birthdaySong"
+        src="https://cdn.pixabay.com/download/audio/2025/03/20/audio_d17fca458b.mp3?filename=happy-birthday-to-you-background-music-for-the-holiday-piano-version-316324.mp3"
+        autoplay loop></audio>
+    <audio id="keypressSound"
+        src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_47f2aa4324.mp3?filename=mech-keyboard-02-102918.mp3"></audio>
+
+    <div id="terminal">
+        <div class="ascii-art" id="ascii"></div>
+        <div id="output"></div>
+        <div id="inputLine">
+            <span id="prompt">&gt;</span>
+            <input type="text" id="commandInput" autofocus />
+        </div>
+    </div>
+
+    <div id="videoModal" class="modal">
+        <video id="teamVideo" controls></video>
+        <div class="close" onclick="closeModal()">[Close X]</div>
+    </div>
+
+    <script>
+        const output = document.getElementById("output");
+        const input = document.getElementById("commandInput");
+        const videoModal = document.getElementById("videoModal");
+        const teamVideo = document.getElementById("teamVideo");
+        const keySound = document.getElementById("keypressSound");
+        const asciiDiv = document.getElementById("ascii");
+
+        const asciiArt = `
+======================================================================
+|      _   _           _          _        ______  _   _ ____        |
+|     | \\ | | ___   __| | ___    (_) ___   / /  _ \\| | | |  _ \\      |
+|     |  \\| |/ _ \\ /  \` |/ _ \\   | |/ __| / /| |_) | |_| | |_) |     |
+|     | |\\  | (_) | (_| |  __/_  | |\\__ \\/ / |  __/|  _  |  __/      |
+|     |_| \\_|\\___/ \\__,_|\\___(_) | ||___/_/  |_|   |_| |_|_|         |
+|                             \\__/ /                                 |
+|====================================================================|
+  `;
+
+        const commands = {
+            "help": "\nAvailable commands (please type option number):\n  1. Anil\n  2. Ankit\n  3. Dilip\n  4. Gourav\n  5. Jyoti\n  6. Mukesh\n  7. Muskan\n  8. Rekha\n  9. Siddhant\n  10. Sujeet\n  11. Sumer\n  12. Vijay\n  13. Vishal\n  14. Wish From Entire Team\n",
+
+            "1": {
+                message: "🎉 Loading birthday wishes from Team Alpha...",
+                video: "https://emorphissoftware-my.sharepoint.com/:v:/r/personal/mukesh_karn_emorphis_in/Documents/Bday-messages/Anil.mp4"
+            },
+            "2": {
+                message: "🎉 Team Beta reporting with love and laughter!",
+                video: "videos/team2.mp4"
+            },
+            "3": {
+                message: "🎈 Cheers and good vibes from Dilip!",
+                video: "videos/dilip.mp4"
+            },
+            "4": {
+                message: "🎉 Gourav sends his heartfelt wishes!",
+                video: "videos/gourav.mp4"
+            },
+            "5": {
+                message: "💐 A warm birthday greeting from Jyotirani!",
+                video: "videos/jyotirani.mp4"
+            },
+            "6": {
+                message: "🎊 Mukesh is in the house with wishes!",
+                video: "videos/mukesh.mp4"
+            },
+            "7": {
+                message: "😊 A sweet wish from Muskan!",
+                video: "videos/muskan.mp4"
+            },
+            "8": {
+                message: "🎁 Rekha brings the party vibes!",
+                video: "videos/rekha.mp4"
+            },
+            "9": {
+                message: "🔥 Siddhant lights up the celebration!",
+                video: "videos/siddhant.mp4"
+            },
+            "10": {
+                message: "🎶 Sujeet drops a beat with his wish!",
+                video: "videos/sujeet.mp4"
+            },
+            "11": {
+                message: "🎂 Sumer shares his warmest regards!",
+                video: "videos/sumer.mp4"
+            },
+            "12": {
+                message: "🥳 Vijay joins the birthday bash!",
+                video: "videos/vijay.mp4"
+            },
+            "13": {
+                message: "🎉 Big wishes from Vishal!",
+                video: "videos/vishal.mp4"
+            },
+            "14": {
+                message: "🎂 Everyone comes together for one big celebration!",
+                video: "videos/all_teams.mp4"
+            }
+        };
+
+
+        function playKeySound() {
+            keySound.currentTime = 0;
+            keySound.play();
+        }
+
+        function typeOut(text, delay = 50, callback) {
+            let i = 0;
+            const interval = setInterval(() => {
+                output.innerHTML += text[i];
+                i++;
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    output.innerHTML += "\n";
+                    if (callback) callback();
+                }
+            }, delay);
+        }
+
+        function showLoadingBar(callback) {
+            let progress = 0;
+            const total = 26;
+            const interval = setInterval(() => {
+                if (progress < total) {
+                    const filled = " █".repeat(progress);
+                    const empty = "  ".repeat(total - progress);
+                    const bar = "[ " + filled + empty + "]";
+                    output.innerHTML = bar + ` ${progress * 4}%`;
+                    progress++;
+                } else {
+                    clearInterval(interval);
+                    output.innerHTML += "\n";
+                    callback();
+                }
+            }, 60);
+        }
+
+
+        function typePassword(length, delay, callback) {
+            let count = 0;
+            const span = document.createElement("span");
+            span.style.color = "#f00";
+            output.appendChild(span);
+
+            const interval = setInterval(() => {
+                if (count < length) {
+                    span.innerText += "*";
+                    count++;
+                } else {
+                    clearInterval(interval);
+                    output.innerHTML += "<br>";
+                    callback && callback();
+                }
+            }, delay);
+        }
+
+        function runStartupSequence() {
+            asciiDiv.innerText = asciiArt;
+            output.innerHTML = "";
+
+            showLoadingBar(() => {
+                typeOut("\nBooting Birthday terminal...", 10, () => {
+                    typeOut("\nEstablishing secure connection to birthday.mainframe.net...", 15, () => {
+                        typeOut("Accessing user profile: 'Nilesh Sir'...", 15, () => {
+                            typeOut("Authenticating...", 15, () => {
+                                output.innerHTML += "Password: ";
+                                typePassword(12, 100, () => {
+                                    typeOut("Access Granted. 🎉", 15, () => {
+                                        typeOut("\nDecrypting birthday surprise...", 15, () => {
+                                            setTimeout(() => {
+                                                typeOut("🎂 INITIATING BIRTHDAY WISH PROTOCOL...", 20, () => {
+                                                    typeOut("\nHappy Birthday, Nilesh Sir! 🎉", 40, () => {
+                                                        typeOut("Wishing you a year filled with success, joy, and growth.", 40, () => {
+                                                            typeOut("May your life compile with purpose, and your ideas flow like clean, elegant code.", 40, () => {
+                                                                typeOut("Here’s to a long, healthy life, full of new achievements and milestones. 🧑‍💻", 40, () => {
+                                                                    typeOut("May your health always be as strong as your vision, and your journey ever bright. 🌟", 40, () => {
+                                                                        typeOut("\nHappy Birthday once again, Nilesh Sir!", 40, () => {
+                                                                            typeOut("-- FROM: Node.js/PHP team --\n\nPlease type 'help' to show command list.", 40);
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+
+                                                });
+                                            }, 1500);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        }
+
+
+        input.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                const cmd = input.value.trim().toLowerCase();
+                output.innerHTML += `\n> ${cmd}\n`;
+                if (commands[cmd]) {
+                    const entry = commands[cmd];
+                    output.innerHTML += `${typeof entry === "string" ? entry : entry.message}\n`;
+
+                    if (entry.video) {
+                        const birthdaySong = document.getElementById("birthdaySong");
+                        birthdaySong.pause(); // Pause music when modal opens
+                        teamVideo.pause();
+                        teamVideo.src = entry.video;
+                        teamVideo.load(); // Reload the video source
+                        videoModal.style.display = "flex";
+                        teamVideo.play(); // Autoplay when modal opens
+                    }
+                } else {
+                    output.innerHTML += "Unknown command. Type 'help' for list.\n";
+                }
+                input.value = "";
+                window.scrollTo(0, document.body.scrollHeight);
+            } else {
+                playKeySound();
+            }
+        });
+
+        function closeModal() {
+            const birthdaySong = document.getElementById("birthdaySong");
+            teamVideo.pause();
+            teamVideo.currentTime = 0;
+            birthdaySong.play(); // Play background music again
+            videoModal.style.display = "none";
+        }
+
+        let birthdayStarted = false;
+        function playBirthdaySongOnce() {
+            if (!birthdayStarted) {
+                const song = document.getElementById("birthdaySong");
+                song.play().catch(() => { });
+                birthdayStarted = true;
+            }
+        }
+
+        // Initial startup
+        runStartupSequence();
+
+        // Close modal on Escape key
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && videoModal.style.display === "flex") {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+
+</html>
