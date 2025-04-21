@@ -134,7 +134,7 @@
   `;
 
         const commands = {
-            "help": "\nAvailable commands (please type option number):\n  1. Anil\n  2. Ankit\n  3. Dilip\n  4. Gourav\n  5. Jyoti\n  6. Mukesh\n  7. Siddhant\n  8. Sujeet\n  9. Sumer\n  10. Vijay\n  11. Vishal\n  12. Wish From Entire Team\n",
+            "list": "\nAvailable commands (please type option number):\n  1. Anil\n  2. Ankit\n  3. Dilip\n  4. Gourav\n  5. Jyoti\n  6. Mukesh\n  7. Siddhant\n  8. Sujeet\n  9. Sumer\n  10. Vijay\n  11. Vishal\n  12. Wish From Entire Team\n",
 
             "1": {
                 message: "🎉 Loading birthday wishes from Anil",
@@ -263,7 +263,7 @@
                                                                 typeOut("Here’s to a long, healthy life, full of new achievements and milestones. 🧑‍💻", 40, () => {
                                                                     typeOut("May your health always be as strong as your vision, and your journey ever bright. 🌟", 40, () => {
                                                                         typeOut("\nHappy Birthday once again, Nilesh Sir!", 40, () => {
-                                                                            typeOut("-- FROM: Node.js/PHP team --\n\nPlease type 'help' to show command list.", 40);
+                                                                            typeOut("-- FROM: Node.js/PHP team --\n\nPlease type 'list' to show command list.", 40);
                                                                         });
                                                                     });
                                                                 });
@@ -302,7 +302,7 @@
                         teamVideo.play(); // Autoplay when modal opens
                     }
                 } else {
-                    output.innerHTML += "Unknown command. Type 'help' for list.\n";
+                    output.innerHTML += "Unknown command. Type 'list' for list.\n";
                 }
                 input.value = "";
                 window.scrollTo(0, document.body.scrollHeight);
