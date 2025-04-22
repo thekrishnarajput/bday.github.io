@@ -292,33 +292,30 @@
             if (e.key === "Enter") {
                 // Separate name to key mapping
                 const nameToKey = {
-                    "anil": "1",
-                    "ankit": "2",
-                    "dilip": "3",
-                    "gourav": "4",
-                    "jyoti": "5",
-                    "mukesh": "6",
-                    "siddhant": "7",
-                    "sujeet": "8",
-                    "sumer": "9",
-                    "vijay": "10",
-                    "vishal": "11",
-                    "mix wishes": "12",
-                    "wish from entire team": "13"
+                    "Anil": "1",
+                    "Ankit": "2",
+                    "Dilip": "3",
+                    "Gourav": "4",
+                    "Jyoti": "5",
+                    "Mukesh": "6",
+                    "Siddhant": "7",
+                    "Sujeet": "8",
+                    "Sumer": "9",
+                    "Vijay": "10",
+                    "Vishal": "11",
+                    "Mix Wishes": "12",
+                    "Wish From Entire Team": "13"
                 };
 
                 // Usage
-                function getWishData(value) {
-                    console.log("value:-", value);
-
-                    const key = nameToKey[value] || value; // support both names and numbers
-                    console.log("key:-", key);
+                function getWishData(input) {
+                    const key = nameToKey[input] || input; // support both names and numbers
                     return commands[key];
                 }
                 const cmd = input.value.trim().toLowerCase();
                 output.innerHTML += `\n> ${cmd}\n`;
-                const entry = getWishData(cmd);
-                if (entry) {
+                if (getWishData(cmd)) {
+                    const entry = getWishData(cmd);
                     output.innerHTML += `${typeof entry === "string" ? entry : entry.message}\n`;
 
                     if (entry.video) {
